@@ -1,6 +1,6 @@
 // --------------------------------------
 // Scan and Identify I2C devices by farmerkeith
-// 14 December 2018
+// 21 January 2019
 // Based on i2c_scanner Version 6
 //
 // This sketch tests all standard 7-bit addresses
@@ -49,6 +49,44 @@ void loop() {
     if (error == 0) {
       byte data1 = 0;
       switch (address) {
+        case 0x1D: 
+          Serial.println(" ADXL345 digital accelerometer");
+          break;
+        case 0x1E:
+          Serial.println(" HMC5883L 3-axis digital compass");
+          break;
+        case 0x20: case 0x21: case 0x22: case 0x23: case 0x24: case 0x25: case 0x26:
+          Serial.println(" PCF8574 I/O expander");
+          break;
+        case 0x27:
+          Serial.println(" LCD with I2C backpack");
+          Serial.println(" PCF8574 I/O expander");
+          break;
+        case 0x31: case 0x32: case 0x33: case 0x34: case 0x35: case 0x36: case 0x37: case 0x38:
+          Serial.println(" PCF8574A I/O expander");
+          break;
+        case 0x40:
+          Serial.println(" HTU21D digital humidity and temperature sensor");
+          break;
+        case 0x48: case 0x49: case 0x4A: case 0x4B: 
+          Serial.println(" ADS1113, ADS1114, ADS1115, ADS1013, ADS1014, ADS1015");
+          break;
+        case 0x50: case 0x51: case 0x52: case 0x54: case 0x55: case 0x56: case 0x57:
+          Serial.println(" AT24C32/64 Eeprom family");
+          break;
+        case 0x53:  
+          Serial.println(" ADXL345 digital accelerometer");
+          Serial.println(" or AT24C32/64 Eeprom family");
+        case 0x68:
+          Serial.println(" DS3231 or DS1307 Real Time Clock");
+          Serial.println(" or MPU9250 gyroscope, accelerometer, magnetometer");
+          Serial.println(" or L3G4200D gyroscope");
+          break;
+        case 0x69: // same device also on 0x68
+        // also need to study pass-through mode of MPU9250
+          Serial.println(" MPU9250 gyroscope, accelerometer, magnetometer");
+          Serial.println(" or L3G4200D gyroscope");
+          break;
         case 0x76: case 0x77:
           Serial.println(" BMP280 or BME280");
           Wire.beginTransmission(address);
@@ -67,7 +105,6 @@ void loop() {
           if (data1 == 0x58) Serial.println(" = BMP280");
           else if (data1 == 0x60) Serial.println(" = BME280");
           else Serial.println(" ID not in list");
-
           break;
         default:
           Serial.println("device not in list");
