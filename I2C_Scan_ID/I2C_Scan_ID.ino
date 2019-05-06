@@ -28,10 +28,11 @@ void loop() {
   Serial.println("Scanning...");
 
   nDevices = 0;
+  Wire.endTransmission();
   for (address = 1; address < 128; address++ )
   {
     // The i2c_scanner uses the return value of
-    // the Write.endTransmisstion to see if
+    // the Write.endTransmission to see if
     // a device did acknowledge to the address.
     Wire.beginTransmission(address);
     error = Wire.endTransmission();
@@ -49,7 +50,7 @@ void loop() {
     if (error == 0) {
       byte data1 = 0;
       switch (address) {
-        case 0x1D: 
+        case 0x1D:
           Serial.println(" ADXL345 digital accelerometer");
           break;
         case 0x1E:
@@ -68,13 +69,13 @@ void loop() {
         case 0x40:
           Serial.println(" HTU21D digital humidity and temperature sensor");
           break;
-        case 0x48: case 0x49: case 0x4A: case 0x4B: 
+        case 0x48: case 0x49: case 0x4A: case 0x4B:
           Serial.println(" ADS1113, ADS1114, ADS1115, ADS1013, ADS1014, ADS1015");
           break;
         case 0x50: case 0x51: case 0x52: case 0x54: case 0x55: case 0x56: case 0x57:
           Serial.println(" AT24C32/64 Eeprom family");
           break;
-        case 0x53:  
+        case 0x53:
           Serial.println(" ADXL345 digital accelerometer");
           Serial.println(" or AT24C32/64 Eeprom family");
         case 0x68:
@@ -83,12 +84,13 @@ void loop() {
           Serial.println(" or L3G4200D gyroscope");
           break;
         case 0x69: // same device also on 0x68
-        // also need to study pass-through mode of MPU9250
+          // also need to study pass-through mode of MPU9250
           Serial.println(" MPU9250 gyroscope, accelerometer, magnetometer");
           Serial.println(" or L3G4200D gyroscope");
           break;
         case 0x76: case 0x77:
           Serial.println(" BMP280 or BME280");
+          // note: address 0x77 may be BMP085,BMA180 and may not be MS5607 or MS5637 CHECK
           Wire.beginTransmission(address);
           // Select register
           Wire.write(0xD0); // 0xD0 hex address of ID
@@ -117,8 +119,8 @@ void loop() {
     Serial.println("No I2C devices found\n");
   } else {
     Serial.println("done\n");
-    digitalWrite(BUILTIN_LED, HIGH);
   }
+  digitalWrite(BUILTIN_LED, HIGH);
   delay(5000);           // wait 5 seconds for next scan
 } // end of void loop()
 
