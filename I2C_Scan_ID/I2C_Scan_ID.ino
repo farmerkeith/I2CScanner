@@ -1,6 +1,6 @@
 // --------------------------------------
 // Scan and Identify I2C devices by farmerkeith
-// 21 January 2019
+// Last update 9 July 2019
 // Based on i2c_scanner Version 6
 //
 // This sketch tests all standard 7-bit addresses
@@ -17,7 +17,6 @@ void setup() {
   Serial.println("\nScans for I2C devices and names any that it knows about");
   Wire.begin();
   pinMode(BUILTIN_LED, OUTPUT);
-
 } // end of void setup()
 
 void loop() {
@@ -26,9 +25,9 @@ void loop() {
 
   digitalWrite(BUILTIN_LED, LOW);
   Serial.println("Scanning...");
-
   nDevices = 0;
   Wire.endTransmission();
+  // for (address = 0x76; address < 0x77; address++ )
   for (address = 1; address < 128; address++ )
   {
     // The i2c_scanner uses the return value of
@@ -48,9 +47,9 @@ void loop() {
       Serial.println(address, HEX);
     }
     if (error == 0) {
-      byte data1 = 0;
+      byte data1 = 0; byte error1=0;
       switch (address) {
-        case 0x1D:
+        case 0x1D: 
           Serial.println(" ADXL345 digital accelerometer");
           break;
         case 0x1E:
@@ -63,19 +62,23 @@ void loop() {
           Serial.println(" LCD with I2C backpack");
           Serial.println(" PCF8574 I/O expander");
           break;
-        case 0x31: case 0x32: case 0x33: case 0x34: case 0x35: case 0x36: case 0x37: case 0x38:
+        case 0x38: case 0x39: case 0x3A: case 0x3B: case 0x3C: case 0x3D: case 0x3E:
+          Serial.println(" PCF8574A I/O expander");
+          break;
+        case 0x3F:
+          Serial.println(" LCD with I2C backpack");
           Serial.println(" PCF8574A I/O expander");
           break;
         case 0x40:
           Serial.println(" HTU21D digital humidity and temperature sensor");
           break;
-        case 0x48: case 0x49: case 0x4A: case 0x4B:
+        case 0x48: case 0x49: case 0x4A: case 0x4B: 
           Serial.println(" ADS1113, ADS1114, ADS1115, ADS1013, ADS1014, ADS1015");
           break;
         case 0x50: case 0x51: case 0x52: case 0x54: case 0x55: case 0x56: case 0x57:
           Serial.println(" AT24C32/64 Eeprom family");
           break;
-        case 0x53:
+        case 0x53:  
           Serial.println(" ADXL345 digital accelerometer");
           Serial.println(" or AT24C32/64 Eeprom family");
         case 0x68:
@@ -84,16 +87,16 @@ void loop() {
           Serial.println(" or L3G4200D gyroscope");
           break;
         case 0x69: // same device also on 0x68
-          // also need to study pass-through mode of MPU9250
+        // also need to study pass-through mode of MPU9250
           Serial.println(" MPU9250 gyroscope, accelerometer, magnetometer");
           Serial.println(" or L3G4200D gyroscope");
           break;
         case 0x76: case 0x77:
-          Serial.println(" BMP280 or BME280");
+          Serial.println(" BMP280 or BME280 or BME680 or MS5607,MS5611,MS5637");
           // note: address 0x77 may be BMP085,BMA180 and may not be MS5607 or MS5637 CHECK
           Wire.beginTransmission(address);
           // Select register
-          Wire.write(0xD0); // 0xD0 hex address of ID
+          Wire.write(0xD0); // 0xD0 hex address of chip_id
           // Stop I2C Transmission
           Wire.endTransmission();
           // Request 1 bytes of data
@@ -106,6 +109,7 @@ void loop() {
           Serial.print(data1, HEX);
           if (data1 == 0x58) Serial.println(" = BMP280");
           else if (data1 == 0x60) Serial.println(" = BME280");
+          else if (data1 == 0x61) Serial.println(" = BME680");
           else Serial.println(" ID not in list");
           break;
         default:
@@ -123,5 +127,3 @@ void loop() {
   digitalWrite(BUILTIN_LED, HIGH);
   delay(5000);           // wait 5 seconds for next scan
 } // end of void loop()
-
-
